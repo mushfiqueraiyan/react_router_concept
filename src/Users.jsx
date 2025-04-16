@@ -1,5 +1,6 @@
-import React from "react";
-import { Link, useLoaderData, useNavigate } from "react-router";
+import React, { Suspense, useState } from "react";
+import { Link, useLoaderData, useLocation, useNavigate } from "react-router";
+import UsersDetails2 from "./UsersDetails2";
 
 const Users = () => {
   const users = useLoaderData();
@@ -10,6 +11,15 @@ const Users = () => {
   const handleNavigate = () => {
     navigate(`/users/${id}`);
   };
+
+  const [info, setInfo] = useState(false);
+
+  const yoPromise = fetch(
+    `https://jsonplaceholder.typicode.com/users/${users.id}`
+  ).then((res) => res.json());
+
+  const location = useLocation();
+
   return (
     <>
       <div>
@@ -22,6 +32,14 @@ const Users = () => {
               </Link>
 
               <button onClick={handleNavigate}>users</button>
+              <button onClick={() => setInfo(!info)}>
+                {info ? "Hide" : "Show"} Info
+              </button>
+              {info && (
+                <Suspense fallback={<span>Loading....</span>}>
+                  <UsersDetails2 yoPromise={yoPromise} />
+                </Suspense>
+              )}
             </div>
           );
         })}
